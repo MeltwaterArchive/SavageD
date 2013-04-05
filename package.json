@@ -1,0 +1,15 @@
+{
+	"name": "proc2statsd",
+	"version": "0.1.0",
+	"author": "Stuart Herbert <stuart.herbert@datasift.com>",
+	"devDependencies": {
+		"testify": "git+ssh://git@github.com:datasift/nodejs-testify.git"
+	},
+	"main": "server.js",
+	"dependencies": {
+		"dsCommon": "git+ssh://git@github.com:datasift/ms-lib-nodeserver.git#develop"
+	},
+	"engines": [
+		"node >= 0.8.0"
+	]
+}
