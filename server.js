@@ -1,6 +1,9 @@
 // Copyright (c) 2013 Mediasift Ltd
 // All rights reserved
 
+// who we are
+process.title = "SavageD daemon";
+
 // simplify require statements
 TOP_DIR          = process.cwd();
 APP_DIR          = TOP_DIR + "/app";
