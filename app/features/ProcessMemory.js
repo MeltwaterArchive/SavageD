@@ -18,9 +18,15 @@ function ProcessMemory(appServer) {
 
 	// our routes
 	appServer.httpManager.routes.ProcessMemory = {
+		"get": [
+			{
+				route: "/process/:alias/memory",
+				handler: this.onGetProcessMemory.bind(this)
+			}
+		],
 		"put": [
 			{
-				route: "/process/:alias/memory/:pid",
+				route: "/process/:alias/memory",
 				handler: this.onPutProcessMemory.bind(this)
 			}
 		],
@@ -33,7 +39,7 @@ function ProcessMemory(appServer) {
 	};
 
 	// our processes to monitor
-	this.pids = {};
+	this.aliases = {};
 
 	// listen for timer events
 	appServer.on('every1sec', this.onTimer.bind(this));
@@ -41,10 +47,40 @@ function ProcessMemory(appServer) {
 module.exports = ProcessMemory;
 util.inherits(ProcessMemory, dsCommon.dsFeature);
 
+ProcessMemory.prototype.onGetProcessMemory = function(req, res, next) {
+	// do we have this process currently in our list?
+	if (this.aliases[req.params.alias] === undefined) {
+		res.send(404, { error: "not monitoring"});
+		return next();
+	}
+
+	// yes, we do
+	res.send(200, { montoring: true });
+	return next();
+};
+
 ProcessMemory.prototype.onPutProcessMemory = function(req, res, next) {
+	// do we have a pid at all?
+	if (req.params.pid === undefined) {
+		res.send(400, { error: "missing param 'pid'" });
+		return next();
+	}
+	// is the pid param empty?
+	if (req.params.pid.length === 0) {
+		res.send(400, { error: "empty param 'pid'" });
+		return next();
+	}
+	// does the pid refer to an existing process?
+	if (!fs.existsSync("/proc/" + req.params.pid + "/status")) {
+		res.send(400, { error: "pid '" + req.params.pid + '" does not exist or insufficent permissions to monitor'});
+		return next();
+	}
+
+	// if we get here, then we have a valid PID to monitor
+
 	this.logNotice("request to start monitoring memory of PID " + req.params.pid + " as alias " + req.params.alias);
 
-	this.pids[req.params.alias] = req.params.pid;
+	this.aliases[req.params.alias] = req.params.pid;
 
 	res.send(200);
 	return next();
@@ -54,14 +90,14 @@ ProcessMemory.prototype.onDeleteProcessMemory = function(req, res, next) {
 	this.logNotice("request to stop monitoring memory of process alias " + req.params.alias);
 
 	// is this PID being monitored?
-	if (this.pids[req.params.alias] === undefined) {
+	if (this.aliases[req.params.alias] === undefined) {
 		this.logWarning("we've already stopped or was never monitoring memory of process alias" + req.params.alias);
 		res.send(404);
 		return next();
 	}
 
 	// stop monitoring
-	this.pids[req.params.alias] = undefined;
+	this.aliases[req.params.alias] = undefined;
 
 	// all done
 	res.send(200);
@@ -70,7 +106,7 @@ ProcessMemory.prototype.onDeleteProcessMemory = function(req, res, next) {
 
 ProcessMemory.prototype.onTimer = function() {
 	// iterate over each of the processes that we are monitoring
-	_.each(this.pids, function(pid, alias) {
+	_.each(this.aliases, function(pid, alias) {
 		if (pid !== undefined) {
 			this.reportUsage(pid, alias);
 		}
