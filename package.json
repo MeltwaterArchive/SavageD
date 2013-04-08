@@ -7,7 +7,9 @@
 	},
 	"main": "server.js",
 	"dependencies": {
-		"dsCommon": "git+ssh://git@github.com:datasift/ms-lib-nodeserver.git#develop"
+		"async": ">=0.2.5",
+		"dsCommon": "git+ssh://git@github.com:datasift/ms-lib-nodeserver.git#develop",
+		"underscore": ">=1.4.4"
 	},
 	"engines": [
 		"node >= 0.8.0"
