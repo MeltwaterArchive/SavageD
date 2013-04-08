@@ -1,3 +1,6 @@
+// Copyright (c) 2013 Mediasift Ltd
+// All rights reserved
+
 // our includes
 var util = require("util");
 var dsCommon = require("dsCommon");
