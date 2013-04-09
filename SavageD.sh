@@ -3,9 +3,20 @@
 # savaged.sh
 #	start | stop SavageD
 
+function die() {
+	echo "$@"
+	exit 1
+}
+
 # special case, for when we start via vagrant / ansible
 if [[ `id -un` == "vagrant" ]]; then
 	cd $HOME/SavageD
+fi
+
+# special case - if we have no node_modules, go and get them
+if [[ ! -d ./node_modules ]] ; then
+	echo "Installing our dependencies first"
+	npm install || die "npm install failed :("
 fi
 
 function start() {
