@@ -3,6 +3,11 @@
 # savaged.sh
 #	start | stop SavageD
 
+# special case, for when we start via vagrant / ansible
+if [[ `id -un` == "vagrant" ]]; then
+	cd $HOME/SavageD
+fi
+
 function start() {
 	if ! is_running ; then
 		# start the process
