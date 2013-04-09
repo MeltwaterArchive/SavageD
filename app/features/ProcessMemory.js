@@ -42,7 +42,7 @@ function ProcessMemory(appServer) {
 	this.aliases = {};
 
 	// listen for timer events
-	appServer.on('every1sec', this.onTimer.bind(this));
+	setInterval(this.onTimer.bind(this), appServer.timers.every1sec);
 }
 module.exports = ProcessMemory;
 util.inherits(ProcessMemory, dsCommon.dsFeature);
