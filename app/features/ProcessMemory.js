@@ -55,7 +55,7 @@ ProcessMemory.prototype.onGetProcessMemory = function(req, res, next) {
 	}
 
 	// yes, we do
-	res.send(200, { montoring: true });
+	res.send(200, { monitoring: true });
 	return next();
 };
 
@@ -100,7 +100,7 @@ ProcessMemory.prototype.onDeleteProcessMemory = function(req, res, next) {
 	this.aliases[req.params.alias] = undefined;
 
 	// all done
-	res.send(200);
+	res.send(200, { monitoring: false });
 	return req.next();
 };
 
