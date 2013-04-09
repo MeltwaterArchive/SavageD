@@ -71,6 +71,29 @@ function is_running() {
 	return 1
 }
 
+function rebuild() {
+	if is_running ; then
+		stop
+	fi
+
+	if [[ -d ./.git ]] ; then
+		echo "Updating our code base"
+		git pull || die "git pull failed :("
+	fi
+
+	echo "Rebuilding our node_modules to ensure they are up to date"
+
+	if [[ -d ./node_modules ]] ; then
+		rm -rf ./node_modules
+	fi
+
+	npm install || die "npm install failed :("
+}
+
+function usage() {
+	echo "usage: SavageD.sh <start|stop|status|rebuild"
+}
+
 function get_pid() {
 	# get the pid of our daemon
 	local pid=`ps -ef | grep "[S]avageD daemon" | awk {' print $2 '}`
@@ -87,7 +110,13 @@ case "$1" in
 	"stop")
 		stop
 		;;
-	*)
+	"rebuild")
+		rebuild
+		;;
+	"start")
 		start
+		;;
+	*)
+		usage
 		;;
 esac
