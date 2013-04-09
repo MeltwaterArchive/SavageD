@@ -129,100 +129,63 @@ ProcessMemory.prototype.reportUsage = function(pid, alias) {
 	// this will hold the processed contents of the status file
 	var status = {};
 
-	async.series([
-		// make sure the file exists
-		function(callback) {
-			// what are we doing?
-			// self.logNotice("checking that '" + filename + "' exists");
+	// does the path exist?
+	if (!fs.existsSync(filename)) {
+			throw new Error("Cannot find file " + filename + " for process ID " + pid);
+	}
 
-			// does the path exist?
-			fs.exists(filename, function(exists) {
-				var err = null;
-				if (!exists) {
-					err = new Error("Cannot find file " + filename + " for process ID " + pid);
-				}
-				return callback(err);
-			});
-		},
-		// read the contents of the file
-		function(callback) {
-			// what are we doing?
-			// self.logNotice("reading contents of '" + filename + '"');
+	content = fs.readFileSync(filename, "ascii");
 
-			// read the contents of the file
-			fs.readFile(filename, "ascii", function(err, data) {
-				if (!err) {
-					content = data;
-				}
-
-				return callback(err);
-			});
-		},
-		// extract the data that we want
-		function(callback) {
-			// self.logInfo("reached the status phase");
-
-			// extract the values that we want
-			_.each(content.split("\n"), function(line) {
-				// peak size of the virtual memory of the process
-				if (line.match(/^VmPeak/)) {
-					status.vmTotalPeak = parseInt(line.split(/\s+/)[1], 10) * 1024;
-				}
-				// current total size of the virtual memory of the process
-				if (line.match(/^VmSize/)) {
-					status.vmCurrentSize = parseInt(line.split(/\s+/)[1], 10) * 1024;
-				}
-				// total amount of 'locked' memory
-				if (line.match(/^VmLck/)) {
-					status.vmLocked = parseInt(line.split(/\s+/)[1], 10) * 1024;
-				}
-				// high-water mark for resident set size
-				if (line.match(/^VmHWM/)) {
-					status.vmRssPeak = parseInt(line.split(/\s+/)[1], 10) * 1024;
-				}
-				// current resident set size
-				if (line.match(/^VmRSS/)) {
-					status.vmCurrentRss = parseInt(line.split(/\s+/)[1], 10) * 1024;
-				}
-				// current data segment size
-				if (line.match(/^VmData/)) {
-					status.vmData = parseInt(line.split(/\s+/)[1], 10) * 1024;
-				}
-				// current stack size
-				if (line.match(/^VmStk/)) {
-					status.vmStack = parseInt(line.split(/\s+/)[1], 10) * 1024;
-				}
-				// current code pages size
-				if (line.match(/^VmExe/)) {
-					status.vmExe = parseInt(line.split(/\s+/)[1], 10) * 1024;
-				}
-				// current library size
-				if (line.match(/^VmLib/)) {
-					status.vmLib = parseInt(line.split(/\s+/)[1], 10) * 1024;
-				}
-				// current page table entries size
-				if (line.match(/^VmPTE/)) {
-					status.vmPTE = parseInt(line.split(/\s+/)[1], 10) * 1024;
-				}
-				// current swap usage
-				if (line.match(/^VmSwap/)) {
-					status.vmSwap = parseInt(line.split(/\s+/)[1], 10) * 1024;
-				}
-			}, this);
-
-			return callback();
+	// extract the values that we want
+	_.each(content.split("\n"), function(line) {
+		// peak size of the virtual memory of the process
+		if (line.match(/^VmPeak/)) {
+			status.vmTotalPeak = parseInt(line.split(/\s+/)[1], 10) * 1024;
 		}
-	],
-	// called when everything is done
-	function(err) {
-		if (err) {
-			self.logError(err);
+		// current total size of the virtual memory of the process
+		if (line.match(/^VmSize/)) {
+			status.vmCurrentSize = parseInt(line.split(/\s+/)[1], 10) * 1024;
 		}
-		else {
-			// at this point, we have data to send to statsd
-			_.each(status, function(value, name) {
-				self.appServer.statsManager.count(alias + "." + name, value);
-			});
+		// total amount of 'locked' memory
+		if (line.match(/^VmLck/)) {
+			status.vmLocked = parseInt(line.split(/\s+/)[1], 10) * 1024;
 		}
+		// high-water mark for resident set size
+		if (line.match(/^VmHWM/)) {
+			status.vmRssPeak = parseInt(line.split(/\s+/)[1], 10) * 1024;
+		}
+		// current resident set size
+		if (line.match(/^VmRSS/)) {
+			status.vmCurrentRss = parseInt(line.split(/\s+/)[1], 10) * 1024;
+		}
+		// current data segment size
+		if (line.match(/^VmData/)) {
+			status.vmData = parseInt(line.split(/\s+/)[1], 10) * 1024;
+		}
+		// current stack size
+		if (line.match(/^VmStk/)) {
+			status.vmStack = parseInt(line.split(/\s+/)[1], 10) * 1024;
+		}
+		// current code pages size
+		if (line.match(/^VmExe/)) {
+			status.vmExe = parseInt(line.split(/\s+/)[1], 10) * 1024;
+		}
+		// current library size
+		if (line.match(/^VmLib/)) {
+			status.vmLib = parseInt(line.split(/\s+/)[1], 10) * 1024;
+		}
+		// current page table entries size
+		if (line.match(/^VmPTE/)) {
+			status.vmPTE = parseInt(line.split(/\s+/)[1], 10) * 1024;
+		}
+		// current swap usage
+		if (line.match(/^VmSwap/)) {
+			status.vmSwap = parseInt(line.split(/\s+/)[1], 10) * 1024;
+		}
+	}, this);
+
+	// at this point, we have data to send to statsd
+	_.each(status, function(value, name) {
+		self.appServer.statsManager.count(alias + "." + name, value);
 	});
 };
