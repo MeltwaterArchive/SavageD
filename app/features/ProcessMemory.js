@@ -9,6 +9,7 @@ var util = require("util");
 var _        = require("underscore");
 var async    = require("async");
 var dsCommon = require("dsCommon");
+var dsTimer  = require("dsCommon").dsTimer;
 
 function ProcessMemory(appServer) {
 	// call our parent constructor
@@ -42,7 +43,7 @@ function ProcessMemory(appServer) {
 	this.aliases = {};
 
 	// listen for timer events
-	setInterval(this.onTimer.bind(this), appServer.timers.every1sec);
+	this.timer = new dsTimer(appServer.timers.every1sec, this.onTimer.bind(this));
 }
 module.exports = ProcessMemory;
 util.inherits(ProcessMemory, dsCommon.dsFeature);
