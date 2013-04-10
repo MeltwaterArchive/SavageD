@@ -124,7 +124,7 @@ ServerMonitor.prototype.onPutServerPlugin = function(req, res, next) {
 
 	this.aliases[req.params.alias].plugins[req.params.plugin] = this.plugins[req.params.plugin];
 
-	res.send(200);
+	res.send(200, { monitoring: true });
 	return next();
 };
 
