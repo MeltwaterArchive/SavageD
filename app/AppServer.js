@@ -4,6 +4,7 @@
 // our includes
 var util = require("util");
 var dsCommon = require("dsCommon");
+var ProcessMonitor = require("./ProcessMonitor");
 
 // our main app server
 function AppServer() {
@@ -11,6 +12,9 @@ function AppServer() {
 	AppServer.super_.call(this, {
 		name: "proc2statsd"
 	});
+
+	// our framework for monitoring individual processes
+	this.processMonitor = new ProcessMonitor(this);
 }
 module.exports = AppServer;
 util.inherits(AppServer, dsCommon.dsAppServer);
