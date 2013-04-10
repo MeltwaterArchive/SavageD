@@ -90,8 +90,39 @@ function rebuild() {
 	npm install || die "npm install failed :("
 }
 
+function selfMonitor() {
+	local pid=`get_pid`
+
+	# do we need to start SavageD first?
+	if [[ -z $pid ]] ; then
+		# yes - so start it
+		start
+
+		# what is the PID now?
+		pid=`get_pid`
+	fi
+
+	# is SavageD running?
+	if [[ -z $pid ]] ; then
+		echo "SavageD is not running; cannot self-monitor"
+		return 1
+	fi
+
+	# what alias do we want to use for ourselves?
+	local alias="SavageD.dev"
+
+	# use CURL to monitor ourselves
+	curl -X PUT http://localhost:8091/process/$alias/memory -d "pid=$pid"
+
+	# switch on monitoring, in case it was switched off
+	curl -X POST http://localhost:8091/stats/monitoring -d 'monitoring=true'
+
+	# all done
+	echo "SavageD is now being monitored as 'qa.$alias.*' in Graphite"
+}
+
 function usage() {
-	echo "usage: SavageD.sh <start|stop|status|rebuild"
+	echo "usage: SavageD.sh <start|stop|status|rebuild|self-monitor"
 }
 
 function get_pid() {
@@ -115,6 +146,9 @@ case "$1" in
 		;;
 	"start")
 		start
+		;;
+	"self-monitor")
+		selfMonitor
 		;;
 	*)
 		usage
