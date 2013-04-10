@@ -88,7 +88,7 @@ ProcessMonitor.prototype.onGetPluginsList = function(req, res, next) {
 	result.sort();
 
 	// return the results
-	res(200, { plugins: result });
+	res.send(200, { plugins: result });
 	return next();
 };
 

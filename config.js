@@ -1,6 +1,7 @@
 {
 	"features": {
-		"ProcessMemory": {}
+		"ProcessMemory": {},
+		"ServerLoadavg": {}
 	},
 	"httpServer": {
 		"port": "8091"
