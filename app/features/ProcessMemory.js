@@ -57,7 +57,7 @@ ProcessMemory.prototype.reportUsage = function(pid, alias) {
 	_.each(content.split("\n"), function(line) {
 		// peak size of the virtual memory of the process
 		if (line.match(/^VmPeak/)) {
-			status.vmTotalPeak = parseInt(line.split(/\s+/)[1], 10) * 1024;
+			status.vmPeakSize = parseInt(line.split(/\s+/)[1], 10) * 1024;
 		}
 		// current total size of the virtual memory of the process
 		if (line.match(/^VmSize/)) {
@@ -69,7 +69,7 @@ ProcessMemory.prototype.reportUsage = function(pid, alias) {
 		}
 		// high-water mark for resident set size
 		if (line.match(/^VmHWM/)) {
-			status.vmRssPeak = parseInt(line.split(/\s+/)[1], 10) * 1024;
+			status.vmPeakRss = parseInt(line.split(/\s+/)[1], 10) * 1024;
 		}
 		// current resident set size
 		if (line.match(/^VmRSS/)) {
