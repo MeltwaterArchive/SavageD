@@ -58,6 +58,15 @@ function stop() {
 
 	echo "SavageD has been stopped"
 }
+function restart() {
+	local pid=`get_pid`
+
+	if [[ -n $pid ]] ; then
+		stop
+	fi
+
+	start
+}
 
 function is_running() {
 	local pid=`get_pid`
@@ -90,13 +99,29 @@ function rebuild() {
 	npm install || die "npm install failed :("
 }
 
+function monitor() {
+	local pid=`get_pid`
+
+	if [[ -z $pid ]] ; then
+		echo "SavageD is not running"
+		exit 1
+	fi
+
+	screen -rd SavageD
+}
+
 function selfMonitor() {
 	local pid=`get_pid`
+	local did_start=
 
 	# do we need to start SavageD first?
 	if [[ -z $pid ]] ; then
 		# yes - so start it
 		start
+		sleep 1
+
+		# remember that we started the daemon
+		did_start=
 
 		# what is the PID now?
 		pid=`get_pid`
@@ -109,20 +134,33 @@ function selfMonitor() {
 	fi
 
 	# what alias do we want to use for ourselves?
-	local alias="SavageD.dev"
+	local proc_alias="SavageD.self"
+	local serv_alias="SavageD.host"
 
 	# use CURL to monitor ourselves
-	curl -X PUT http://localhost:8091/process/$alias/memory -d "pid=$pid"
+	#
+	# setup the alias first
+	curl -X PUT http://localhost:8091/process/$proc_alias/pid -d "pid=$pid"
+
+	# activate all known process plugins
+	curl -X PUT http://localhost:8091/process/$proc_alias/memory
+
+	# activate all known server plugins
+	curl -X PUT http://localhost:8091/server/$serv_alias/loadavg
 
 	# switch on monitoring, in case it was switched off
 	curl -X POST http://localhost:8091/stats/monitoring -d 'monitoring=true'
 
-	# all done
-	echo "SavageD is now being monitored as 'qa.$alias.*' in Graphite"
+	# if we started it, switch to the screen
+	if [[ -n $did_start ]] ; then
+		screen -rd SavageD
+	else
+		echo "SavageD is now monitoring itself as 'qa.$proc_alias' in Graphite"
+	fi
 }
 
 function usage() {
-	echo "usage: SavageD.sh <start|stop|status|rebuild|self-monitor"
+	echo "usage: SavageD.sh <start|stop|restart|status|rebuild|self-monitor"
 }
 
 function get_pid() {
@@ -141,6 +179,9 @@ case "$1" in
 	"stop")
 		stop
 		;;
+	"restart")
+		restart
+		;;
 	"rebuild")
 		rebuild
 		;;
@@ -149,6 +190,9 @@ case "$1" in
 		;;
 	"self-monitor")
 		selfMonitor
+		;;
+	"monitor")
+		monitor
 		;;
 	*)
 		usage
