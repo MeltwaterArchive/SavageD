@@ -161,7 +161,7 @@ ServerMonitor.prototype.onTimer = function() {
 	_.each(this.aliases, function(details, alias) {
 		if (details.plugins !== undefined) {
 			_.each(details.plugins, function(plugin) {
-				plugin.reportUsage(alias);
+				plugin.reportUsage.call(plugin, alias);
 			});
 		}
 	}, this);
