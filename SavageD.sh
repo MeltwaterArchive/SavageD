@@ -147,6 +147,7 @@ function selfMonitor() {
 
 	# activate all known server plugins
 	curl -X PUT http://localhost:8091/server/$serv_alias/loadavg
+	curl -X PUT http://localhost:8091/server/$serv_alias/cpu
 
 	# switch on monitoring, in case it was switched off
 	curl -X POST http://localhost:8091/stats/monitoring -d 'monitoring=true'
