@@ -1,6 +1,7 @@
 {
 	"features": {
 		"ProcessMemory": {},
+		"ServerCpu": {},
 		"ServerLoadavg": {}
 	},
 	"httpServer": {
