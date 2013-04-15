@@ -104,6 +104,9 @@ ServerMonitor.prototype.onGetServerPlugin = function(req, res, next) {
 };
 
 ServerMonitor.prototype.onPutServerPlugin = function(req, res, next) {
+	// self-reference
+	var self = this;
+
 	// does this alias exist?
 	if (this.aliases[req.params.alias] === undefined) {
 		this.aliases[req.params.alias] = { plugins: {} };
@@ -116,17 +119,16 @@ ServerMonitor.prototype.onPutServerPlugin = function(req, res, next) {
 	}
 
 	// can this plugin monitor our PID?
-	var filename = this.plugins[req.params.plugin].getFilenameToMonitor();
-	if (!filename) {
+	var filenames = this.plugins[req.params.plugin].getFilenamesToMonitor();
+	if (!filenames || filenames.length === 0) {
 		res.send(400, { error: "insufficient permissions to monitor"} );
 		return next();
 	}
 
-	// get the parser to use
-	var parser = this.plugins[req.params.plugin].getFileParser();
-
-	// tell the appServer to start monitoring the file that the plugin needs
-	this.appServer.startMonitoring(filename, parser);
+	// tell the appServer to start monitoring the file(s) that the plugin needs
+	_.each(filenames, function(fileDetails) {
+		self.appServer.startMonitoring(fileDetails.filename, fileDetails.parser);
+	});
 
 	// remember that this plugin is now live
 	this.aliases[req.params.alias].plugins[req.params.plugin] = this.plugins[req.params.plugin];
@@ -136,6 +138,9 @@ ServerMonitor.prototype.onPutServerPlugin = function(req, res, next) {
 };
 
 ServerMonitor.prototype.onDeleteServerPlugin = function(req, res, next) {
+	// self-reference
+	var self = this;
+
 	// does this alias exist?
 	if (this.aliases[req.params.alias] === undefined) {
 		res.send(404, { error: "unknown alias" });
@@ -156,8 +161,10 @@ ServerMonitor.prototype.onDeleteServerPlugin = function(req, res, next) {
 	this.aliases[req.params.alias].plugins[req.params.plugin] = undefined;
 
 	// stop monitoring the underlying file too
-	var filename = plugin.getFilenameToMonitor();
-	this.appServer.stopMonitoring(filename);
+	var filenames = plugin.getFilenamesToMonitor();
+	_.each(filenames, function(fileDetails) {
+		self.appServer.stopMonitoring(fileDetails.filename);
+	});
 
 	// all done
 	res.send(200, { monitoring: false });

@@ -27,12 +27,13 @@ function ServerLoadavg(appServer) {
 module.exports = ServerLoadavg;
 util.inherits(ServerLoadavg, dsCommon.dsFeature);
 
-ServerLoadavg.prototype.getFilenameToMonitor = function() {
-	return this.filename;
-};
-
-ServerLoadavg.prototype.getFileParser = function() {
-	return new ServerLoadavgParser();
+ServerLoadavg.prototype.getFilenamesToMonitor = function() {
+	return [
+		{
+			filename: this.filename,
+			parser:   new ServerLoadavgParser()
+		}
+	];
 };
 
 ServerLoadavg.prototype.reportUsage = function(alias) {

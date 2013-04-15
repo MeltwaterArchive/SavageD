@@ -27,12 +27,13 @@ function ServerCpu(appServer) {
 module.exports = ServerCpu;
 util.inherits(ServerCpu, dsCommon.dsFeature);
 
-ServerCpu.prototype.getFilenameToMonitor = function() {
-	return this.filename;
-};
-
-ServerCpu.prototype.getFileParser = function() {
-	return new ServerStatParser();
+ServerCpu.prototype.getFilenamesToMonitor = function() {
+	return [
+		{
+			filename: this.filename,
+			parser:   new ServerStatParser()
+		}
+	];
 };
 
 ServerCpu.prototype.reportUsage = function(alias) {
