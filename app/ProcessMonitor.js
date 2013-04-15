@@ -59,9 +59,6 @@ function ProcessMonitor(appServer) {
 
 	// our list of plugins to use
 	this.plugins = {};
-
-	// listen for timer events
-	this.timer = new dsCommon.dsTimer(appServer.timers.every1sec, this.onTimer.bind(this));
 }
 module.exports = ProcessMonitor;
 util.inherits(ProcessMonitor, dsCommon.dsFeature);

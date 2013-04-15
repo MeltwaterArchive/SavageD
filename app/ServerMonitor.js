@@ -49,7 +49,6 @@ function ServerMonitor(appServer) {
 	this.plugins = {};
 
 	// listen for timer events
-	this.timer = new dsCommon.dsTimer(appServer.timers.every1sec, this.onTimer.bind(this));
 }
 module.exports = ServerMonitor;
 util.inherits(ServerMonitor, dsCommon.dsFeature);
@@ -117,7 +116,8 @@ ServerMonitor.prototype.onPutServerPlugin = function(req, res, next) {
 	}
 
 	// can this plugin monitor our PID?
-	if (!this.plugins[req.params.plugin].canMonitorServer()) {
+	var filename = this.plugins[req.params.plugin].getFilenameToMonitor();
+	if (!filename) {
 		res.send(400, { error: "insufficient permissions to monitor"} );
 		return next();
 	}
