@@ -21,9 +21,6 @@ function ServerCpu(appServer) {
 	// this is the file that we want to monitor
 	this.filename = "/proc/stat";
 
-	// tell the appServer to start monitoring the stat file
-	appServer.startMonitoring(this.filename, new ServerStatParser());
-
 	// add ourselves to the list of available plugins
 	appServer.serverMonitor.addPlugin("cpu", this);
 }
@@ -31,12 +28,11 @@ module.exports = ServerCpu;
 util.inherits(ServerCpu, dsCommon.dsFeature);
 
 ServerCpu.prototype.getFilenameToMonitor = function() {
-	// can we see the /proc/stat file?
-	if (!fs.existsSync(this.filename)) {
-		return null;
-	}
-
 	return this.filename;
+};
+
+ServerCpu.prototype.getFileParser = function() {
+	return new ServerStatParser();
 };
 
 ServerCpu.prototype.reportUsage = function(alias) {

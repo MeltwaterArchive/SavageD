@@ -122,6 +122,13 @@ ServerMonitor.prototype.onPutServerPlugin = function(req, res, next) {
 		return next();
 	}
 
+	// get the parser to use
+	var parser = this.plugins[req.params.plugin].getFileParser();
+
+	// tell the appServer to start monitoring the file that the plugin needs
+	this.appServer.startMonitoring(filename, parser);
+
+	// remember that this plugin is now live
 	this.aliases[req.params.alias].plugins[req.params.plugin] = this.plugins[req.params.plugin];
 
 	res.send(200, { monitoring: true });
@@ -142,8 +149,15 @@ ServerMonitor.prototype.onDeleteServerPlugin = function(req, res, next) {
 		return next();
 	}
 
+	// the plugin that we're going to stop
+	var plugin = this.aliases[req.params.alias].plugins[req.params.plugin];
+
 	// stop monitoring
 	this.aliases[req.params.alias].plugins[req.params.plugin] = undefined;
+
+	// stop monitoring the underlying file too
+	var filename = plugin.getFilenameToMonitor();
+	this.appServer.stopMonitoring(filename);
 
 	// all done
 	res.send(200, { monitoring: false });
@@ -161,7 +175,9 @@ ServerMonitor.prototype.onTimer = function() {
 	_.each(this.aliases, function(details, alias) {
 		if (details.plugins !== undefined) {
 			_.each(details.plugins, function(plugin) {
-				plugin.reportUsage.call(plugin, alias);
+				if (plugin !== undefined) {
+					plugin.reportUsage.call(plugin, alias);
+				}
 			});
 		}
 	}, this);

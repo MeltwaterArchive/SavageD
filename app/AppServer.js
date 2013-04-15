@@ -111,7 +111,9 @@ AppServer.prototype.onTimer = function() {
 	// we handle this centrally to ensure that every plugin sees a
 	// consistent snapshot of the state of the host
 	_.each(this.filesToMonitor, function(details, filename) {
-		details.data = details.parser.retrieveStats(filename);
+		if (details !== undefined) {
+			details.data = details.parser.retrieveStats(filename);
+		}
 	});
 
 	// call all of our server monitoring plugins

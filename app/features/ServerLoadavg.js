@@ -21,9 +21,6 @@ function ServerLoadavg(appServer) {
 	// this is the file that we want to monitor
 	this.filename = "/proc/loadavg";
 
-	// tell the appServer to start monitoring the loadavg file
-	appServer.startMonitoring(this.filename, new ServerLoadavgParser());
-
 	// add ourselves to the list of available plugins
 	appServer.serverMonitor.addPlugin("loadavg", this);
 }
@@ -31,12 +28,11 @@ module.exports = ServerLoadavg;
 util.inherits(ServerLoadavg, dsCommon.dsFeature);
 
 ServerLoadavg.prototype.getFilenameToMonitor = function() {
-	// can we see the /proc/loadavg file?
-	if (!fs.existsSync("/proc/loadavg")) {
-		return null;
-	}
-
 	return this.filename;
+};
+
+ServerLoadavg.prototype.getFileParser = function() {
+	return new ServerLoadavgParser();
 };
 
 ServerLoadavg.prototype.reportUsage = function(alias) {
