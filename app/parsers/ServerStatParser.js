@@ -16,7 +16,7 @@ module.exports = ServerStatParser;
 
 ServerStatParser.prototype.retrieveStats = function(filename) {
 	// get the current CPU stats
-	var stats = this.retrieveLatestStats();
+	var stats = this.retrieveLatestStats(filename);
 
 	// is this the first time?
 	if (this.cpuStats.cpu === undefined) {
@@ -25,7 +25,7 @@ ServerStatParser.prototype.retrieveStats = function(filename) {
 
 		// nothing to report this time around, as we have no CPU stats
 		// to compare against
-		this.logInfo("No CPU stats to diff yet");
+		// this.logInfo("No CPU stats to diff yet");
 		return { raw: {}, diff: {}, percentages: {} };
 	}
 
