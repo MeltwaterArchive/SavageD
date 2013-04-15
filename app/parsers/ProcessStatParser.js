@@ -2,6 +2,7 @@
 // All rights reserved
 
 var fs = require("fs");
+var _ = require("underscore");
 
 function PidStatParser()
 {
@@ -9,12 +10,9 @@ function PidStatParser()
 }
 module.exports = PidStatParser;
 
-PidStatParser.prototype.getStats = function(pid) {
+PidStatParser.prototype.retrieveStats = function(filename) {
 	// self-reference
 	var self = this;
-
-	// where are we getting the data from?
-	var filename = "/proc/" + pid + "/stat";
 
 	// does the file exist?
 	if (!fs.existsSync(filename)) {
@@ -24,8 +22,8 @@ PidStatParser.prototype.getStats = function(pid) {
 	// this will hold the processed contents of the stat file
 	var results = {};
 
-	// this will hold the raw contents of the status file
-	var content = fs.readFileSync(filename, ascii);
+	// this will hold the raw contents of the stat file
+	var content = fs.readFileSync(filename, "ascii");
 
 	// let's split up the file
 	var parsed = content.split(/\s/);

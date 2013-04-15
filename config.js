@@ -1,5 +1,6 @@
 {
 	"features": {
+		"ProcessCpu": {},
 		"ProcessMemory": {},
 		"ServerCpu": {},
 		"ServerLoadavg": {}
