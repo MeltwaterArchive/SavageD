@@ -168,6 +168,7 @@ ProcessMonitor.prototype.onDeleteProcessPid = function(req, res, next) {
 	res.send(200, { monitoring: false });
 	return req.next();
 };
+
 // ========================================================================
 //
 // Plugin management
@@ -192,9 +193,12 @@ ProcessMonitor.prototype.onGetProcessPlugin = function(req, res, next) {
 };
 
 ProcessMonitor.prototype.onPutProcessPlugin = function(req, res, next) {
+	// self-reference
+	var self = this;
+
 	// does this alias exist?
 	if (this.aliases[req.params.alias] === undefined) {
-		res.send(404, { error: "unknown process; you must set the pid first" });
+		res.send(404, { error: "unknown process; you must set the pid first via the /process/" + req.params.alias + "/pid API endpoint" });
 		return next();
 	}
 
@@ -208,11 +212,18 @@ ProcessMonitor.prototype.onPutProcessPlugin = function(req, res, next) {
 	var pid = this.aliases[req.params.alias].pid;
 
 	// can this plugin monitor our PID?
-	if (!this.plugins[req.params.plugin].canMonitorPid(pid)) {
+	var filenames = this.plugins[req.params.plugin].getFilenamesToMonitor(pid);
+	if (!filenames || filenames.length === 0) {
 		res.send(400, { error: "pid 'pid' does not exist or insufficient permissions to monitor"} );
 		return next();
 	}
 
+	// tell the appServer to start monitoring the file(s) that the plugin needs
+	_.each(filenames, function(fileDetails) {
+		self.appServer.startMonitoring(fileDetails.filename, fileDetails.parser);
+	});
+
+	// remember that this plugin is now live
 	if (this.aliases[req.params.alias].plugins === undefined) {
 		this.aliases[req.params.alias].plugins = {};
 	}
@@ -223,6 +234,9 @@ ProcessMonitor.prototype.onPutProcessPlugin = function(req, res, next) {
 };
 
 ProcessMonitor.prototype.onDeleteProcessPlugin = function(req, res, next) {
+	// self-reference
+	var self = this;
+
 	// does this alias exist?
 	if (this.aliases[req.params.alias] === undefined) {
 		res.send(404, { error: "unknown process" });
@@ -236,8 +250,17 @@ ProcessMonitor.prototype.onDeleteProcessPlugin = function(req, res, next) {
 		return next();
 	}
 
+	// shorthand
+	var pid = this.aliases[req.params.alias].pid;
+
 	// stop monitoring
 	this.aliases[req.params.alias].plugins[req.params.plugin] = undefined;
+
+	// stop monitoring the underlying file(s) too
+	var filenames = plugin.getFilenamesToMonitor(pid);
+	_.each(filenames, function(fileDetails) {
+		self.appServer.stopMonitoring(fileDetails.filename);
+	});
 
 	// all done
 	res.send(200, { monitoring: false });
