@@ -140,10 +140,10 @@ function selfMonitor() {
 	# use CURL to monitor ourselves
 	#
 	# setup the alias first
-	curl -X PUT http://localhost:8091/process/$proc_alias/pid -d "pid=$pid"
+	# curl -X PUT http://localhost:8091/process/$proc_alias/pid -d "pid=$pid"
 
 	# activate all known process plugins
-	curl -X PUT http://localhost:8091/process/$proc_alias/memory
+	# curl -X PUT http://localhost:8091/process/$proc_alias/memory
 
 	# activate all known server plugins
 	curl -X PUT http://localhost:8091/server/$serv_alias/loadavg
@@ -158,6 +158,39 @@ function selfMonitor() {
 	else
 		echo "SavageD is now monitoring itself as 'qa.$proc_alias' in Graphite"
 	fi
+}
+
+function stopSelfMonitor() {
+	local pid=`get_pid`
+	local did_start=
+
+	# is SavageD running?
+	if [[ -z $pid ]] ; then
+		echo "SavageD is not running; nothing to stop"
+		return 1
+	fi
+
+	# what alias do we want to use for ourselves?
+	local proc_alias="SavageD.self"
+	local serv_alias="SavageD.host"
+
+	# use CURL to stop monitor ourselves
+	#
+	# setup the alias first
+	# curl -X PUT http://localhost:8091/process/$proc_alias/pid -d "pid=$pid"
+
+	# activate all known process plugins
+	# curl -X PUT http://localhost:8091/process/$proc_alias/memory
+
+	# activate all known server plugins
+	curl -X DELETE http://localhost:8091/server/$serv_alias/loadavg
+	curl -X DELETE http://localhost:8091/server/$serv_alias/cpu
+
+	# switch on monitoring, in case it was switched off
+	curl -X POST http://localhost:8091/stats/monitoring -d 'monitoring=false'
+
+	# all done
+	echo "SavageD is no longer monitoring itself"
 }
 
 function usage() {
@@ -191,6 +224,9 @@ case "$1" in
 		;;
 	"self-monitor")
 		selfMonitor
+		;;
+	"stop-self-monitor")
+		stopSelfMonitor
 		;;
 	"monitor")
 		monitor
