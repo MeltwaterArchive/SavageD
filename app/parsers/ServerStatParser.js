@@ -8,9 +8,21 @@ var util = require("util");
 // our third-party includes
 var _        = require("underscore");
 
+// a parser that we are going to rely on :)
+var ServerCpuinfoParser = require("./ServerCpuinfoParser");
+
 function ServerStatParser(appServer) {
+	// remember the appServer
+	this.appServer = appServer;
+
 	// our absolute CPU stats
 	this.cpuStats = {};
+
+	// how many CPUs do we have in this server?
+	//
+	// this doesn't support hotswapping CPUs, but if you do that,
+	// then the stats are all messed up anyways
+	this.cpuCount = this.getNumberOfCpus();
 }
 module.exports = ServerStatParser;
 
@@ -99,7 +111,7 @@ ServerStatParser.prototype.diffCpuStats = function(oldStats, newStats) {
 	_.each(oldStats, function(cpu, cpuName) {
 		results[cpuName] = {};
 		_.each(cpu, function(value, fieldName) {
-			results[cpuName][fieldName] = newStats[cpuName][fieldName] - value;
+			results[cpuName][fieldName] = (newStats[cpuName][fieldName] - value);
 		});
 	});
 
@@ -108,18 +120,40 @@ ServerStatParser.prototype.diffCpuStats = function(oldStats, newStats) {
 };
 
 ServerStatParser.prototype.statsToPercent = function(stats) {
+	// self-reference
+	var self = this;
+
+	// this will hold our results
 	var results = {};
 
 	// use that 'total' field we created for ourselves to convert
 	// the jiffies into a percentage for each CPU
 	_.each(stats, function(cpu, cpuName) {
 		results[cpuName] = {};
+
+		// are we looking at per-cpu stats?
+		var multiplier = 1.0;
+		if (cpuName === "cpu") {
+			// the 'total' should be in terms of the number of CPUs
+			// on the box
+			multiplier = parseFloat(self.cpuCount);
+		}
+
 		_.each(cpu, function(value, fieldName) {
 			// calculate the percentage, to 2 decimal places
-			results[cpuName][fieldName] = Math.round((parseFloat(value) / parseFloat(stats[cpuName].total)) * 10000.0) / 100.0;
+			results[cpuName][fieldName] = Math.round((parseFloat(value) / parseFloat(stats[cpuName].total)) * 10000.0) / 100.0 * multiplier;
 		});
 	});
 
 	// all done
 	return results;
+};
+
+ServerStatParser.prototype.getNumberOfCpus = function() {
+	// get the CPU info stats
+	var parser = new ServerCpuinfoParser();
+	var stats  = parser.retrieveStats("/proc/cpuinfo");
+
+	// how many CPUs are there?
+	return stats.length;
 };
