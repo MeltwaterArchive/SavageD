@@ -106,6 +106,8 @@ AppServer.prototype.onTimer = function() {
 		return;
 	}
 
+	// console.log(this.filesToMonitor);
+
 	// get the latest data from all of the files that we are tracking
 	//
 	// we handle this centrally to ensure that every plugin sees a
