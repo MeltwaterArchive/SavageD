@@ -8,6 +8,12 @@ function die() {
 	exit 1
 }
 
+# special case - CentOS 5.ancient
+PYTHON=python
+if which python26 > /dev/null 2?&1 ; then
+	PYTHON=python26
+fi
+
 # special case, for when we start via vagrant / ansible
 if [[ `id -un` == "vagrant" ]]; then
 	cd $HOME/SavageD
@@ -16,7 +22,7 @@ fi
 # special case - if we have no node_modules, go and get them
 if [[ ! -d ./node_modules ]] ; then
 	echo "Installing our dependencies first"
-	npm install || die "npm install failed :("
+	PYTHON=$PYTHON npm install || die "npm install failed :("
 fi
 
 function start() {
