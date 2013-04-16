@@ -77,12 +77,20 @@ ProcessStatusParser.prototype.retrieveStats = function(filename) {
 	results.FDSize = parseInt(results.FDSize, 10);
 
 	// groups list
-	results.groups_list = results.Groups.trim().split(/\s/);
+	if (results.Groups.trim().length > 0) {
+		results.groups_list = results.Groups.trim().split(/\s/);
+	}
+	else {
+		results.groups_list = [];
+	}
 
 	// memory
 	_.each(["VmPeak", "VmSize", "VmLck", "VmPin", "VmHWM", "VmRSS", "VmData", "VmStk", "VmExe", "VmLib", "VmPTE", "VmSwap"], function(name) {
-		var parsed = results[name].split(/\s/);
-		results[name] = parseInt(parsed[0], 10) * 1024;
+		// not every line appears in every kernel
+		if (results[name] !== undefined) {
+			var parsed = results[name].split(/\s/);
+			results[name] = parseInt(parsed[0], 10) * 1024;
+		}
 	});
 
 	// threads
@@ -96,6 +104,8 @@ ProcessStatusParser.prototype.retrieveStats = function(filename) {
 	// context switches
 	results.voluntary_ctxt_switches = parseInt(results.voluntary_ctxt_switches, 10);
 	results.nonvoluntary_ctxt_switches = parseInt(results.nonvoluntary_ctxt_switches, 10);
+
+	console.log(results);
 
 	// all done
 	return results;

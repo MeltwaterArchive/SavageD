@@ -90,9 +90,12 @@ ServerStatParser.prototype.retrieveLatestStats = function(filename) {
 				irq:        parseInt(parsed[6], 10),
 				softirq:    parseInt(parsed[7], 10),
 				steal:      parseInt(parsed[8], 10),
-				guest:      parseInt(parsed[9], 10),
-				guest_nice: parseInt(parsed[10], 10)
+				guest:      parseInt(parsed[9], 10)
 			};
+
+			if (parsed[10] !== undefined) {
+				results[parsed[0]].guest_nice = parseInt(parsed[10], 10);
+			}
 
 			// we need a total, to make any sense of them
 			results[parsed[0]].total = _.reduce(results[parsed[0]], function(previousValue, currentValue, index, array) { return previousValue + currentValue; }, 0);
