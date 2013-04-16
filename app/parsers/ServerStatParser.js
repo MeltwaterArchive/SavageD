@@ -89,9 +89,12 @@ ServerStatParser.prototype.retrieveLatestStats = function(filename) {
 				iowait:     parseInt(parsed[5], 10),
 				irq:        parseInt(parsed[6], 10),
 				softirq:    parseInt(parsed[7], 10),
-				steal:      parseInt(parsed[8], 10),
-				guest:      parseInt(parsed[9], 10)
+				steal:      parseInt(parsed[8], 10)
 			};
+
+			if (parsed[9] !== undefined) {
+				results[parsed[9]].guest_nice = parseInt(parsed[9], 10);
+			}
 
 			if (parsed[10] !== undefined) {
 				results[parsed[0]].guest_nice = parseInt(parsed[10], 10);

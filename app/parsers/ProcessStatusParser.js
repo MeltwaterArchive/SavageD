@@ -102,10 +102,13 @@ ProcessStatusParser.prototype.retrieveStats = function(filename) {
 	results.max_signal_queue = parseInt(parsed[1], 10);
 
 	// context switches
-	results.voluntary_ctxt_switches = parseInt(results.voluntary_ctxt_switches, 10);
-	results.nonvoluntary_ctxt_switches = parseInt(results.nonvoluntary_ctxt_switches, 10);
+	if (results.voluntary_ctxt_switches !== undefined) {
+		results.voluntary_ctxt_switches = parseInt(results.voluntary_ctxt_switches, 10);
+	}
 
-	console.log(results);
+	if (results.nonvoluntary_ctxt_switches !== undefined) {
+		results.nonvoluntary_ctxt_switches = parseInt(results.nonvoluntary_ctxt_switches, 10);
+	}
 
 	// all done
 	return results;
