@@ -10,7 +10,7 @@ function die() {
 
 # special case - CentOS 5.ancient
 PYTHON=python
-if which python26 > /dev/null 2?&1 ; then
+if which python26 > /dev/null 2>&1 ; then
 	PYTHON=python26
 fi
 
