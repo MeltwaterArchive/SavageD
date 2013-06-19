@@ -2,9 +2,6 @@
 	"name": "proc2statsd",
 	"version": "0.1.0",
 	"author": "Stuart Herbert <stuart.herbert@datasift.com>",
-	"devDependencies": {
-		"testify": "git+ssh://git@github.com:datasift/nodejs-testify.git"
-	},
 	"main": "server.js",
 	"dependencies": {
 		"async": ">=0.2.5",
