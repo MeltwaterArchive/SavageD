@@ -93,7 +93,7 @@ ServerStatParser.prototype.retrieveLatestStats = function(filename) {
 			};
 
 			if (parsed[9] !== undefined) {
-				results[parsed[9]].guest_nice = parseInt(parsed[9], 10);
+				results[parsed[0]].guest_nice = parseInt(parsed[9], 10);
 			}
 
 			if (parsed[10] !== undefined) {
