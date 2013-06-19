@@ -114,7 +114,12 @@ AppServer.prototype.onTimer = function() {
 	// consistent snapshot of the state of the host
 	_.each(this.filesToMonitor, function(details, filename) {
 		if (details !== undefined) {
-			details.data = details.parser.retrieveStats(filename);
+			try {
+				details.data = details.parser.retrieveStats(filename);
+			}
+			catch (e) {
+				console.log(e);
+			}
 		}
 	});
 
