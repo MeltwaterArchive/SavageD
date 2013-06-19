@@ -89,7 +89,7 @@ ServerMonitor.prototype.onGetPluginsList = function(req, res, next) {
 ServerMonitor.prototype.onGetServerPlugin = function(req, res, next) {
 	// does this alias exist?
 	if (this.aliases[req.params.alias] === undefined) {
-		res.send(404, { error: "unknown alias" });
+		res.send(404, { error: "no such alias" });
 		return next();
 	}
 
