@@ -110,7 +110,7 @@ ProcessMonitor.prototype.hasProcessPid = function(alias) {
 
 ProcessMonitor.prototype.onGetProcessPid = function(req, res, next) {
 	// what are we doing?
-	this.logInfo("HTTP GET /process/" + req.params.alias . "/pid");
+	this.logInfo("HTTP GET /process/" + req.params.alias + "/pid");
 
 	// do we have this process currently in our list?
 	if (!this.hasProcessPid(req.params.alias)) {
