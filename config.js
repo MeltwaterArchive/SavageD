@@ -2,6 +2,7 @@
 	"features": {
 		"ProcessCpu": {},
 		"ProcessMemory": {},
+		"ProcessThreads": {},
 		"ServerCpu": {},
 		"ServerLoadavg": {}
 	},

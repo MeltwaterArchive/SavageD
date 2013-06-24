@@ -32,14 +32,14 @@ function ProcessMonitor(appServer) {
 				handler: this.onGetProcessPlugin.bind(this)
 			}
 		],
-		"put": [
+		"post": [
 			{
 				route: "/process/:alias/pid",
-				handler: this.onPutProcessPid.bind(this)
+				handler: this.onPostProcessPid.bind(this)
 			},
 			{
 				route: "/process/:alias/:plugin",
-				handler: this.onPutProcessPlugin.bind(this)
+				handler: this.onPostProcessPlugin.bind(this)
 			}
 		],
 		"del": [
@@ -120,7 +120,7 @@ ProcessMonitor.prototype.onGetProcessPid = function(req, res, next) {
 	return next();
 };
 
-ProcessMonitor.prototype.onPutProcessPid = function(req, res, next) {
+ProcessMonitor.prototype.onPostProcessPid = function(req, res, next) {
 	// do we have a pid at all?
 	if (req.params.pid === undefined) {
 		res.send(400, { error: "missing param 'pid'" });
@@ -192,7 +192,7 @@ ProcessMonitor.prototype.onGetProcessPlugin = function(req, res, next) {
 	res.send(200, { monitoring: true} );
 };
 
-ProcessMonitor.prototype.onPutProcessPlugin = function(req, res, next) {
+ProcessMonitor.prototype.onPostProcessPlugin = function(req, res, next) {
 	// self-reference
 	var self = this;
 

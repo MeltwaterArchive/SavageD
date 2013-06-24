@@ -146,15 +146,16 @@ function selfMonitor() {
 	# use CURL to monitor ourselves
 	#
 	# setup the alias first
-	curl -X PUT http://localhost:8091/process/$proc_alias/pid -d "pid=$pid"
+	curl -X POST http://localhost:8091/process/$proc_alias/pid -d "pid=$pid"
 
 	# activate all known process plugins
-	curl -X PUT http://localhost:8091/process/$proc_alias/memory
-	curl -X PUT http://localhost:8091/process/$proc_alias/cpu
+	curl -X POST http://localhost:8091/process/$proc_alias/memory
+	curl -X POST http://localhost:8091/process/$proc_alias/cpu
+	curl -X POST http://localhost:8091/process/$proc_alias/threads
 
 	# activate all known server plugins
-	curl -X PUT http://localhost:8091/server/$serv_alias/loadavg
-	curl -X PUT http://localhost:8091/server/$serv_alias/cpu
+	curl -X POST http://localhost:8091/server/$serv_alias/loadavg
+	curl -X POST http://localhost:8091/server/$serv_alias/cpu
 
 	# switch on monitoring, in case it was switched off
 	curl -X POST http://localhost:8091/stats/monitoring -d 'monitoring=true'
@@ -184,16 +185,16 @@ function stopSelfMonitor() {
 	# use CURL to stop monitor ourselves
 	#
 	# setup the alias first
-	curl -X PUT http://localhost:8091/process/$proc_alias/pid -d "pid=$pid"
+	curl -X POST http://localhost:8091/process/$proc_alias/pid -d "pid=$pid"
 
 	# activate all known process plugins
-	curl -X PUT http://localhost:8091/process/$proc_alias/memory
+	curl -X POST http://localhost:8091/process/$proc_alias/memory
 
-	# activate all known server plugins
+	# stop all known server plugins
 	curl -X DELETE http://localhost:8091/server/$serv_alias/loadavg
 	curl -X DELETE http://localhost:8091/server/$serv_alias/cpu
 
-	# switch on monitoring, in case it was switched off
+	# switch off monitoring
 	curl -X POST http://localhost:8091/stats/monitoring -d 'monitoring=false'
 
 	# all done

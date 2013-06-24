@@ -28,10 +28,10 @@ function ServerMonitor(appServer) {
 				handler: this.onGetServerPlugin.bind(this)
 			}
 		],
-		"put": [
+		"post": [
 			{
 				route: "/server/:alias/:plugin",
-				handler: this.onPutServerPlugin.bind(this)
+				handler: this.onPostServerPlugin.bind(this)
 			}
 		],
 		"del": [
@@ -103,7 +103,7 @@ ServerMonitor.prototype.onGetServerPlugin = function(req, res, next) {
 	res.send(200, { monitoring: true} );
 };
 
-ServerMonitor.prototype.onPutServerPlugin = function(req, res, next) {
+ServerMonitor.prototype.onPostServerPlugin = function(req, res, next) {
 	// self-reference
 	var self = this;
 
