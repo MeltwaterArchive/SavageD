@@ -109,6 +109,9 @@ ProcessMonitor.prototype.hasProcessPid = function(alias) {
 };
 
 ProcessMonitor.prototype.onGetProcessPid = function(req, res, next) {
+	// what are we doing?
+	this.logInfo("HTTP GET /process/" + req.params.alias . "/pid");
+
 	// do we have this process currently in our list?
 	if (!this.hasProcessPid(req.params.alias)) {
 		res.send(404, { error: "no such alias"});
@@ -121,6 +124,9 @@ ProcessMonitor.prototype.onGetProcessPid = function(req, res, next) {
 };
 
 ProcessMonitor.prototype.onPostProcessPid = function(req, res, next) {
+	// what are we doing?
+	this.logInfo("HTTP POST /process/" + req.params.alias + "/" + req.params.pid);
+
 	// do we have a pid at all?
 	if (req.params.pid === undefined) {
 		res.send(400, { error: "missing param 'pid'" });
@@ -155,6 +161,9 @@ ProcessMonitor.prototype.onPostProcessPid = function(req, res, next) {
 };
 
 ProcessMonitor.prototype.onDeleteProcessPid = function(req, res, next) {
+	// what are we doing?
+	this.logInfo("HTTP DELETE /process/" + req.params.alias _ "/pid");
+
 	// is this PID being monitored?
 	if (this.aliases[req.params.alias] === undefined) {
 		res.send(404, { error: "no such alias" });
@@ -176,6 +185,9 @@ ProcessMonitor.prototype.onDeleteProcessPid = function(req, res, next) {
 // ------------------------------------------------------------------------
 
 ProcessMonitor.prototype.onGetProcessPlugin = function(req, res, next) {
+	// what are we doing?
+	this.logInfo("HTTP GET /process/" + req.params.alias + "/" + req.params.plugin);
+
 	// does this alias exist?
 	if (this.aliases[req.params.alias] === undefined) {
 		res.send(404, { error: "unknown process; you must set the pid first" });
@@ -195,6 +207,9 @@ ProcessMonitor.prototype.onGetProcessPlugin = function(req, res, next) {
 ProcessMonitor.prototype.onPostProcessPlugin = function(req, res, next) {
 	// self-reference
 	var self = this;
+
+	// what are we doing?
+	this.logInfo("HTTP POST /process/" + req.params.alias + "/" + req.params.plugin);
 
 	// does this alias exist?
 	if (this.aliases[req.params.alias] === undefined) {
@@ -236,6 +251,9 @@ ProcessMonitor.prototype.onPostProcessPlugin = function(req, res, next) {
 ProcessMonitor.prototype.onDeleteProcessPlugin = function(req, res, next) {
 	// self-reference
 	var self = this;
+
+	// what are we doing?
+	this.logInfo("HTTP DELETE /process/" + req.params.alias + "/" + req.params.plugin);
 
 	// does this alias exist?
 	if (this.aliases[req.params.alias] === undefined) {
