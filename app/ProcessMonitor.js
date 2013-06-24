@@ -162,7 +162,7 @@ ProcessMonitor.prototype.onPostProcessPid = function(req, res, next) {
 
 ProcessMonitor.prototype.onDeleteProcessPid = function(req, res, next) {
 	// what are we doing?
-	this.logInfo("HTTP DELETE /process/" + req.params.alias _ "/pid");
+	this.logInfo("HTTP DELETE /process/" + req.params.alias + "/pid");
 
 	// is this PID being monitored?
 	if (this.aliases[req.params.alias] === undefined) {
