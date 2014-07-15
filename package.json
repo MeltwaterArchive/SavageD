@@ -5,7 +5,7 @@
 	"main": "server.js",
 	"dependencies": {
 		"async": ">=0.2.5",
-		"dsCommon": "git+ssh://git@github.com:datasift/ms-lib-nodeserver.git#develop",
+		"dsCommon": "git+https://@github.com/datasift/ms-lib-nodeserver.git#develop",
 		"underscore": ">=1.4.4"
 	},
 	"engines": [
