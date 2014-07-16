@@ -1,6 +1,6 @@
 # README
 
-SavageD is a realtime data-gathering daemon, initially written for Linux.  It was built to monitor software and servers that are under test, to support [storyplayer](https://datasift.github.io/storyplayer/).
+SavageD is a realtime data-gathering daemon, initially written for Linux.  It was built to monitor software and servers that are under test, to support [storyplayer](https://github.com/datasift/storyplayer/).
 
 * Gathers data in realtime (per-second resolution)
 * Simple plugin architecture (plugins can be released as npm modules)
